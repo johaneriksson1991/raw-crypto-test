@@ -1,0 +1,26 @@
+language: rust
+sudo: required
+dist: xenial
+addons:
+    apt:
+        packages:
+            - libssl-dev
+cache: cargo
+rust:
+  - 1.37.0
+
+before_cache: |
+  RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-tarpaulin -f
+
+script:
+- cargo clean
+- cargo build
+- cargo test
+
+after_success: |
+    # Uncomment the following line for coveralls.io
+    # cargo tarpaulin --ciserver travis-ci --coveralls $TRAVIS_JOB_ID
+
+    # Uncomment the following two lines create and upload a report for codecov.io
+    cargo tarpaulin --release --out Xml
+    bash <(curl -s https://codecov.io/bash)
